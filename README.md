@@ -37,7 +37,7 @@ For multiple files, the app downloads a ZIP containing all converted ICO files.
 
 ## Local Development
 
-No dependencies are required.
+No dependencies are required for the static website.
 
 You can open the file directly:
 
@@ -50,6 +50,30 @@ Or serve the folder with any static server, for example:
 ```bash
 npx serve .
 ```
+
+## Windows Portable App
+
+This branch also includes an Electron wrapper that builds a portable Windows executable.
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the desktop app locally:
+
+```bash
+npm start
+```
+
+Build the portable `.exe`:
+
+```bash
+npm run build:win
+```
+
+The generated executable is written to `dist/` as `PNG-to-ICO-Portable-<version>.exe`.
 
 ## Deployment
 
