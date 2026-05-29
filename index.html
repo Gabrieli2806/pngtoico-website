@@ -13,33 +13,44 @@
   </head>
   <body>
     <main class="app-shell">
+      <header class="topbar" aria-label="Preferencias" data-i18n-aria-label="preferences">
+        <div class="segmented" aria-label="Idioma" data-i18n-aria-label="language">
+          <button class="segmented-btn is-active" id="lang-es" type="button" data-lang-option="es">ES</button>
+          <button class="segmented-btn" id="lang-en" type="button" data-lang-option="en">ENG</button>
+        </div>
+        <label class="theme-toggle">
+          <input id="theme-toggle" type="checkbox">
+          <span data-i18n="darkMode">Modo oscuro</span>
+        </label>
+      </header>
+
       <section class="hero" aria-labelledby="page-title">
         <div class="hero-copy">
-          <p class="eyebrow">Conversor local por lotes</p>
-          <h1 id="page-title">Convierte PNG a ICO sin subir tus archivos</h1>
-          <p class="intro">
+          <p class="eyebrow" data-i18n="eyebrow">Conversor local por lotes</p>
+          <h1 id="page-title" data-i18n="title">Convierte PNG a ICO sin subir tus archivos</h1>
+          <p class="intro" data-i18n="intro">
             Arrastra tus PNG, elige los tamaños del icono y descarga todos los
-            `.ico` juntos. Pensado para lotes grandes, como 100 imagenes a la vez.
+            `.ico` juntos. Pensado para lotes grandes, como 100 imágenes a la vez.
           </p>
         </div>
 
-        <div class="stats" aria-label="Resumen">
+        <div class="stats" aria-label="Resumen" data-i18n-aria-label="summary">
           <div>
             <strong id="file-count">0</strong>
-            <span>archivos</span>
+            <span data-i18n="files">archivos</span>
           </div>
           <div>
             <strong id="done-count">0</strong>
-            <span>convertidos</span>
+            <span data-i18n="converted">convertidos</span>
           </div>
           <div>
             <strong id="total-size">0 MB</strong>
-            <span>seleccionados</span>
+            <span data-i18n="selected">seleccionados</span>
           </div>
         </div>
       </section>
 
-      <section class="workspace" aria-label="Convertidor">
+      <section class="workspace" aria-label="Convertidor" data-i18n-aria-label="converter">
         <div class="upload-panel">
           <label class="drop-zone" id="drop-zone" for="file-input">
             <input id="file-input" type="file" accept="image/png" multiple>
@@ -48,13 +59,13 @@
                 <path d="M12 3v12m0-12 4.5 4.5M12 3 7.5 7.5M4 15v3a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-3"/>
               </svg>
             </span>
-            <span class="drop-title">Suelta tus PNG aqui</span>
-            <span class="drop-subtitle">o haz clic para seleccionar muchos archivos</span>
+            <span class="drop-title" data-i18n="dropTitle">Suelta tus PNG aquí</span>
+            <span class="drop-subtitle" data-i18n="dropSubtitle">o haz clic para seleccionar muchos archivos</span>
           </label>
 
-          <div class="controls" aria-label="Opciones">
+          <div class="controls" aria-label="Opciones" data-i18n-aria-label="options">
             <div class="control-group">
-              <span class="control-label">Tamanos dentro del ICO</span>
+              <span class="control-label" data-i18n="sizesLabel">Tamaños dentro del ICO</span>
               <div class="size-grid" id="size-options">
                 <label><input type="checkbox" value="16" checked>16</label>
                 <label><input type="checkbox" value="32" checked>32</label>
@@ -67,15 +78,15 @@
 
             <label class="control-row">
               <span>
-                <span class="control-label">Nombre de descarga</span>
-                <span class="hint">Se usa cuando descargas un ZIP</span>
+                <span class="control-label" data-i18n="downloadName">Nombre de descarga</span>
+                <span class="hint" data-i18n="downloadHint">Se usa cuando descargas un ZIP</span>
               </span>
               <input id="zip-name" type="text" value="iconos-convertidos">
             </label>
 
             <div class="actions">
-              <button class="secondary" id="clear-btn" type="button">Limpiar</button>
-              <button class="primary" id="convert-btn" type="button" disabled>
+              <button class="secondary" id="clear-btn" type="button" data-i18n="clear">Limpiar</button>
+              <button class="primary" id="convert-btn" type="button" disabled data-i18n="convert">
                 Convertir y descargar
               </button>
             </div>
@@ -85,10 +96,10 @@
         <div class="queue-panel">
           <div class="queue-head">
             <div>
-              <h2>Cola de archivos</h2>
-              <p id="status-text">Selecciona archivos PNG para empezar.</p>
+              <h2 data-i18n="queueTitle">Cola de archivos</h2>
+              <p id="status-text"></p>
             </div>
-            <div class="progress-wrap" aria-label="Progreso">
+            <div class="progress-wrap" aria-label="Progreso" data-i18n-aria-label="progress">
               <div class="progress-bar">
                 <span id="progress-fill"></span>
               </div>
@@ -99,7 +110,7 @@
           <ul class="file-list" id="file-list" aria-live="polite"></ul>
           <div class="empty-state" id="empty-state">
             <span>PNG</span>
-            <p>Los archivos seleccionados apareceran aqui con su estado.</p>
+            <p data-i18n="emptyState">Los archivos seleccionados aparecerán aquí con su estado.</p>
           </div>
         </div>
       </section>

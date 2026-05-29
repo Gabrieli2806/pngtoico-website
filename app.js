@@ -12,11 +12,105 @@ const doneCount = document.querySelector("#done-count");
 const totalSize = document.querySelector("#total-size");
 const zipNameInput = document.querySelector("#zip-name");
 const sizeOptions = document.querySelector("#size-options");
+const themeToggle = document.querySelector("#theme-toggle");
+const langButtons = document.querySelectorAll("[data-lang-option]");
+
+const translations = {
+  es: {
+    titleTag: "PNG a ICO",
+    metaDescription: "Convierte archivos PNG a ICO por lotes directamente en tu navegador.",
+    preferences: "Preferencias",
+    language: "Idioma",
+    darkMode: "Modo oscuro",
+    eyebrow: "Conversor local por lotes",
+    title: "Convierte PNG a ICO sin subir tus archivos",
+    intro:
+      "Arrastra tus PNG, elige los tamaños del icono y descarga todos los `.ico` juntos. Pensado para lotes grandes, como 100 imágenes a la vez.",
+    summary: "Resumen",
+    files: "archivos",
+    converted: "convertidos",
+    selected: "seleccionados",
+    converter: "Convertidor",
+    dropTitle: "Suelta tus PNG aquí",
+    dropSubtitle: "o haz clic para seleccionar muchos archivos",
+    options: "Opciones",
+    sizesLabel: "Tamaños dentro del ICO",
+    downloadName: "Nombre de descarga",
+    downloadHint: "Se usa cuando descargas un ZIP",
+    defaultZipName: "iconos-convertidos",
+    clear: "Limpiar",
+    convert: "Convertir y descargar",
+    queueTitle: "Cola de archivos",
+    progress: "Progreso",
+    emptyState: "Los archivos seleccionados aparecerán aquí con su estado.",
+    initialStatus: "Selecciona archivos PNG para empezar.",
+    onlyPng: "Solo se aceptan archivos PNG.",
+    pngReady: (count) => `${count} PNG listos para convertir.`,
+    convertingFiles: "Convirtiendo archivos...",
+    noneConverted: "No se pudo convertir ningún archivo.",
+    icoDownloaded: "Archivo ICO descargado.",
+    zipDownloaded: (count) => `${count} iconos descargados en ZIP.`,
+    pngError: "No se pudo generar PNG",
+    readError: (name) => `No se pudo leer ${name}`,
+    statusReady: "Listo",
+    statusConverting: "Convirtiendo",
+    statusConverted: "Convertido",
+    statusError: "Error",
+  },
+  en: {
+    titleTag: "PNG to ICO",
+    metaDescription: "Convert PNG files to ICO in batches directly in your browser.",
+    preferences: "Preferences",
+    language: "Language",
+    darkMode: "Dark mode",
+    eyebrow: "Local batch converter",
+    title: "Convert PNG to ICO without uploading your files",
+    intro:
+      "Drop your PNG files, choose the icon sizes, and download all `.ico` files together. Built for large batches, like 100 images at once.",
+    summary: "Summary",
+    files: "files",
+    converted: "converted",
+    selected: "selected",
+    converter: "Converter",
+    dropTitle: "Drop your PNG files here",
+    dropSubtitle: "or click to select many files",
+    options: "Options",
+    sizesLabel: "Sizes inside the ICO",
+    downloadName: "Download name",
+    downloadHint: "Used when you download a ZIP",
+    defaultZipName: "converted-icons",
+    clear: "Clear",
+    convert: "Convert and download",
+    queueTitle: "File queue",
+    progress: "Progress",
+    emptyState: "Selected files will appear here with their status.",
+    initialStatus: "Select PNG files to start.",
+    onlyPng: "Only PNG files are accepted.",
+    pngReady: (count) => `${count} PNG ready to convert.`,
+    convertingFiles: "Converting files...",
+    noneConverted: "No files could be converted.",
+    icoDownloaded: "ICO file downloaded.",
+    zipDownloaded: (count) => `${count} icons downloaded in a ZIP.`,
+    pngError: "Could not generate PNG",
+    readError: (name) => `Could not read ${name}`,
+    statusReady: "Ready",
+    statusConverting: "Converting",
+    statusConverted: "Converted",
+    statusError: "Error",
+  },
+};
+
+let currentLang = localStorage.getItem("pngtoicon-lang") || "es";
+let currentStatus = "initialStatus";
 
 let selectedFiles = [];
 let statuses = new Map();
 let objectUrls = [];
 let isConverting = false;
+let zipNameEdited = false;
+
+applyTheme(localStorage.getItem("pngtoicon-theme") || getPreferredTheme());
+applyLanguage(currentLang);
 
 fileInput.addEventListener("change", () => addFiles(fileInput.files));
 
@@ -38,6 +132,15 @@ dropZone.addEventListener("drop", (event) => {
 clearBtn.addEventListener("click", clearFiles);
 convertBtn.addEventListener("click", convertSelectedFiles);
 sizeOptions.addEventListener("change", updateConvertState);
+themeToggle.addEventListener("change", () => {
+  applyTheme(themeToggle.checked ? "dark" : "light");
+});
+langButtons.forEach((button) => {
+  button.addEventListener("click", () => applyLanguage(button.dataset.langOption));
+});
+zipNameInput.addEventListener("input", () => {
+  zipNameEdited = true;
+});
 
 function addFiles(fileListLike) {
   const incoming = Array.from(fileListLike).filter((file) => file.type === "image/png");
@@ -47,7 +150,7 @@ function addFiles(fileListLike) {
     const key = fileKey(file);
     if (!known.has(key)) {
       selectedFiles.push(file);
-      statuses.set(key, "Listo");
+      statuses.set(key, "ready");
       known.add(key);
     }
   }
@@ -58,9 +161,9 @@ function addFiles(fileListLike) {
   updateConvertState();
 
   if (incoming.length === 0 && fileListLike.length > 0) {
-    statusText.textContent = "Solo se aceptan archivos PNG.";
+    setStatus("onlyPng");
   } else if (selectedFiles.length > 0) {
-    statusText.textContent = `${selectedFiles.length} PNG listos para convertir.`;
+    setStatus("pngReady", selectedFiles.length);
   }
 }
 
@@ -74,7 +177,7 @@ function clearFiles() {
   renderFiles();
   updateSummary();
   updateConvertState();
-  statusText.textContent = "Selecciona archivos PNG para empezar.";
+  setStatus("initialStatus");
 }
 
 async function convertSelectedFiles() {
@@ -86,14 +189,14 @@ async function convertSelectedFiles() {
   clearBtn.disabled = true;
   doneCount.textContent = "0";
   setProgress(0);
-  statusText.textContent = "Convirtiendo archivos...";
+  setStatus("convertingFiles");
 
   const converted = [];
   let completed = 0;
 
   for (const file of selectedFiles) {
     const key = fileKey(file);
-    statuses.set(key, "Convirtiendo");
+    statuses.set(key, "converting");
     renderFiles();
 
     try {
@@ -102,9 +205,9 @@ async function convertSelectedFiles() {
         blob: icoBlob,
         name: `${nameWithoutExtension(file.name)}.ico`,
       });
-      statuses.set(key, "Convertido");
+      statuses.set(key, "converted");
     } catch (error) {
-      statuses.set(key, "Error");
+      statuses.set(key, "error");
       console.error(error);
     }
 
@@ -116,14 +219,14 @@ async function convertSelectedFiles() {
   }
 
   if (converted.length === 0) {
-    statusText.textContent = "No se pudo convertir ningun archivo.";
+    setStatus("noneConverted");
   } else if (converted.length === 1) {
     downloadBlob(converted[0].blob, converted[0].name);
-    statusText.textContent = "Archivo ICO descargado.";
+    setStatus("icoDownloaded");
   } else {
     const zipBlob = await buildZipBlob(converted);
-    downloadBlob(zipBlob, `${safeName(zipNameInput.value || "iconos-convertidos")}.zip`);
-    statusText.textContent = `${converted.length} iconos descargados en ZIP.`;
+    downloadBlob(zipBlob, `${safeName(zipNameInput.value || t("defaultZipName"))}.zip`);
+    setStatus("zipDownloaded", converted.length);
   }
 
   isConverting = false;
@@ -201,7 +304,7 @@ function resizeToPng(image, size) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) resolve(blob);
-      else reject(new Error("No se pudo generar PNG"));
+      else reject(new Error(t("pngError")));
     }, "image/png");
   });
 }
@@ -216,7 +319,7 @@ function loadImage(file) {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error(`No se pudo leer ${file.name}`));
+      reject(new Error(t("readError", file.name)));
     };
     image.src = url;
   });
@@ -233,7 +336,7 @@ function renderFiles() {
     const key = fileKey(file);
     const url = URL.createObjectURL(file);
     objectUrls.push(url);
-    const status = statuses.get(key) || "Listo";
+    const status = statuses.get(key) || "ready";
     const item = document.createElement("li");
     item.className = "file-item";
     item.innerHTML = `
@@ -242,7 +345,7 @@ function renderFiles() {
         <span class="file-name">${escapeHtml(file.name)}</span>
         <span class="file-meta">${formatBytes(file.size)}</span>
       </span>
-      <span class="badge ${statusClass(status)}">${status}</span>
+      <span class="badge ${statusClass(status)}">${t(`status${capitalize(status)}`)}</span>
     `;
     fileList.appendChild(item);
   }
@@ -295,9 +398,69 @@ function formatBytes(bytes) {
 }
 
 function statusClass(status) {
-  if (status === "Convertido") return "done";
-  if (status === "Error") return "error";
+  if (status === "converted") return "done";
+  if (status === "error") return "error";
   return "";
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  themeToggle.checked = theme === "dark";
+  localStorage.setItem("pngtoicon-theme", theme);
+}
+
+function getPreferredTheme() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyLanguage(lang) {
+  currentLang = translations[lang] ? lang : "es";
+  document.documentElement.lang = currentLang;
+  document.title = t("titleTag");
+  document
+    .querySelector('meta[name="description"]')
+    ?.setAttribute("content", t("metaDescription"));
+
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  });
+  langButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.langOption === currentLang);
+  });
+  syncDefaultZipName();
+
+  localStorage.setItem("pngtoicon-lang", currentLang);
+  refreshStatusText();
+  renderFiles();
+}
+
+function syncDefaultZipName() {
+  const defaults = Object.values(translations).map((translation) => translation.defaultZipName);
+  if (!zipNameEdited && defaults.includes(zipNameInput.value)) {
+    zipNameInput.value = t("defaultZipName");
+  }
+}
+
+function setStatus(key, value) {
+  currentStatus = { key, value };
+  refreshStatusText();
+}
+
+function refreshStatusText() {
+  const status = typeof currentStatus === "string" ? { key: currentStatus } : currentStatus;
+  statusText.textContent = t(status.key, status.value);
+}
+
+function t(key, value) {
+  const entry = translations[currentLang][key] ?? translations.es[key] ?? key;
+  return typeof entry === "function" ? entry(value) : entry;
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function downloadBlob(blob, filename) {
