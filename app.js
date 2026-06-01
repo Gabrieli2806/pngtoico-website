@@ -14,6 +14,11 @@ const zipNameInput = document.querySelector("#zip-name");
 const sizeOptions = document.querySelector("#size-options");
 const themeToggle = document.querySelector("#theme-toggle");
 const langButtons = document.querySelectorAll("[data-lang-option]");
+const sizeSlider = document.querySelector("#size-slider");
+const sizeCanvas = document.querySelector("#size-canvas");
+const sizeDimLabel = document.querySelector("#size-dim-label");
+
+const PREVIEW_SIZES = [16, 32, 48, 64, 128, 256];
 
 const translations = {
   es: {
@@ -108,9 +113,11 @@ let statuses = new Map();
 let objectUrls = [];
 let isConverting = false;
 let zipNameEdited = false;
+let previewSize = 256;
 
 applyTheme(localStorage.getItem("pngtoicon-theme") || getPreferredTheme());
 applyLanguage(currentLang);
+updateSizeCanvas();
 
 fileInput.addEventListener("change", () => addFiles(fileInput.files));
 
@@ -132,6 +139,10 @@ dropZone.addEventListener("drop", (event) => {
 clearBtn.addEventListener("click", clearFiles);
 convertBtn.addEventListener("click", convertSelectedFiles);
 sizeOptions.addEventListener("change", updateConvertState);
+sizeSlider.addEventListener("input", () => {
+  previewSize = PREVIEW_SIZES[Number(sizeSlider.value)];
+  updateSizeCanvas();
+});
 themeToggle.addEventListener("change", () => {
   applyTheme(themeToggle.checked ? "dark" : "light");
 });
@@ -159,6 +170,7 @@ function addFiles(fileListLike) {
   renderFiles();
   updateSummary();
   updateConvertState();
+  updateSizeCanvas();
 
   if (incoming.length === 0 && fileListLike.length > 0) {
     setStatus("onlyPng");
@@ -177,6 +189,7 @@ function clearFiles() {
   renderFiles();
   updateSummary();
   updateConvertState();
+  updateSizeCanvas();
   setStatus("initialStatus");
 }
 
@@ -348,6 +361,48 @@ function renderFiles() {
       <span class="badge ${statusClass(status)}">${t(`status${capitalize(status)}`)}</span>
     `;
     fileList.appendChild(item);
+  }
+}
+
+async function updateSizeCanvas() {
+  sizeDimLabel.textContent = `${previewSize} × ${previewSize}`;
+
+  if (selectedFiles.length === 0) {
+    sizeCanvas.width = previewSize;
+    sizeCanvas.height = previewSize;
+    return;
+  }
+
+  try {
+    const image = await loadImage(selectedFiles[0]);
+    const blob = await resizeToPng(image, previewSize);
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => {
+      sizeCanvas.width = previewSize;
+      sizeCanvas.height = previewSize;
+      const ctx = sizeCanvas.getContext("2d");
+      ctx.clearRect(0, 0, previewSize, previewSize);
+      ctx.drawImage(img, 0, 0);
+      if (previewSize <= 32) {
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= previewSize; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, previewSize);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, i);
+          ctx.lineTo(previewSize, i);
+          ctx.stroke();
+        }
+      }
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  } catch (error) {
+    console.error(error);
   }
 }
 
