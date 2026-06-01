@@ -66,6 +66,19 @@
           <div class="controls" aria-label="Opciones" data-i18n-aria-label="options">
             <div class="control-group">
               <span class="control-label" data-i18n="sizesLabel">Tamaños dentro del ICO</span>
+
+              <div class="size-preview">
+                <canvas id="size-canvas"></canvas>
+                <span class="size-dim-label" id="size-dim-label">256 × 256</span>
+              </div>
+
+              <div class="size-slider-wrap">
+                <input id="size-slider" type="range" min="0" max="5" step="1" value="5">
+                <div class="size-ticks">
+                  <span>16</span><span>32</span><span>48</span><span>64</span><span>128</span><span>256</span>
+                </div>
+              </div>
+
               <div class="size-grid" id="size-options">
                 <label><input type="checkbox" value="16" checked>16</label>
                 <label><input type="checkbox" value="32" checked>32</label>
