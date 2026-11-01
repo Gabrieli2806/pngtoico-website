@@ -1,0 +1,46 @@
+{
+  "name": "pngtoicon-portable",
+  "version": "1.1.0",
+  "description": "Portable Windows desktop app for converting PNG files to ICO files in bulk.",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win portable",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "png",
+    "ico",
+    "converter",
+    "portable",
+    "windows"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.pngtoicon.converter",
+    "productName": "PNG to ICO",
+    "artifactName": "PNG-to-ICO-Portable-${version}.${ext}",
+    "files": [
+      "index.html",
+      "styles.css",
+      "app.js",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "PNG-to-ICO-Portable-${version}.${ext}"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

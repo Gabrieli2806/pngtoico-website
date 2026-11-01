@@ -37,7 +37,7 @@ For multiple files, the app downloads a ZIP containing all converted ICO files.
 
 ## Local Development
 
-No dependencies are required.
+No dependencies are required for the static website.
 
 You can open the file directly:
 
@@ -50,6 +50,30 @@ Or serve the folder with any static server, for example:
 ```bash
 npx serve .
 ```
+
+## Windows Portable App
+
+The project also includes an Electron wrapper that builds a portable Windows executable.
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the desktop app locally:
+
+```bash
+npm start
+```
+
+Build the portable `.exe`:
+
+```bash
+npm run build:win
+```
+
+The generated executable is written to `dist/` as `PNG-to-ICO-Portable-<version>.exe`.
 
 ## Deployment
 
@@ -64,3 +88,7 @@ All conversion work happens locally in the user's browser using Canvas and Blob 
 ## License
 
 Add a license file if you plan to publish or share this project publicly.
+
+## Current release
+
+Version 1.1.0 combines the refreshed web interface, bilingual legacy notice, and interactive icon-size preview in both the website and Windows portable app. Visit https://g2806.net for newer applications.

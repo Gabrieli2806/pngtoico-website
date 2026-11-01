@@ -22,13 +22,22 @@ const PREVIEW_SIZES = [16, 32, 48, 64, 128, 256];
 
 const translations = {
   es: {
+    workspaceLabel: "TU ESPACIO DE TRABAJO",
+    workspaceTitle: "Pequeños iconos. Grandes ideas.",
+    localBadge: "100% en tu dispositivo",
+    uploadStep: "Añade tus imágenes",
+    settingsStep: "Hazlo a tu medida",
+    browse: "Explorar archivos ↗",
+    batchNote: "Un archivo o todo un lote. Tú eliges.",
+    emptyTitle: "Tu próxima gran idea empieza aquí",
+    footerNote: "Esta app/web es un proyecto legacy. Descubre nuevas aplicaciones y experiencias modernas en",
     titleTag: "PNG a ICO",
     metaDescription: "Convierte archivos PNG a ICO por lotes directamente en tu navegador.",
     preferences: "Preferencias",
     language: "Idioma",
     darkMode: "Modo oscuro",
-    eyebrow: "Conversor local por lotes",
-    title: "Convierte PNG a ICO sin subir tus archivos",
+    eyebrow: "TU CONVERSOR, SIN COMPLICACIONES",
+    title: "De imagen a icono. Así de simple.",
     intro:
       "Arrastra tus PNG, elige los tamaños del icono y descarga todos los `.ico` juntos. Pensado para lotes grandes, como 100 imágenes a la vez.",
     summary: "Resumen",
@@ -63,15 +72,24 @@ const translations = {
     statusError: "Error",
   },
   en: {
+    workspaceLabel: "YOUR WORKSPACE",
+    workspaceTitle: "Small icons. Big ideas.",
+    localBadge: "100% on your device",
+    uploadStep: "Add your images",
+    settingsStep: "Make it your own",
+    browse: "Browse files ↗",
+    batchNote: "One file or a whole batch. Your call.",
+    emptyTitle: "Your next big idea starts here",
+    footerNote: "This app/website is a legacy project. Discover new apps and modern experiences at",
     titleTag: "PNG to ICO",
     metaDescription: "Convert PNG files to ICO in batches directly in your browser.",
     preferences: "Preferences",
     language: "Language",
     darkMode: "Dark mode",
-    eyebrow: "Local batch converter",
-    title: "Convert PNG to ICO without uploading your files",
+    eyebrow: "YOUR CONVERTER, SIMPLIFIED",
+    title: "From image to icon. Just like that.",
     intro:
-      "Drop your PNG files, choose the icon sizes, and download all `.ico` files together. Built for large batches, like 100 images at once.",
+      "Give your projects the icons they deserve. Turn PNGs into ICO files in seconds, without them ever leaving your device.",
     summary: "Summary",
     files: "files",
     converted: "converted",
@@ -484,6 +502,7 @@ function applyLanguage(lang) {
   });
   langButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.langOption === currentLang);
+    button.setAttribute("aria-pressed", String(button.dataset.langOption === currentLang));
   });
   syncDefaultZipName();
 
