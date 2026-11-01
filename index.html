@@ -14,7 +14,7 @@
   <body>
     <main class="app-shell">
       <header class="topbar" aria-label="Preferencias" data-i18n-aria-label="preferences">
-        <div class="segmented" aria-label="Idioma" data-i18n-aria-label="language">
+        <a class="brand" href="./" aria-label="PNG to ICO"><span>png<span class="brand-light">to</span>ico<span class="brand-dot">.</span></span></a><div class="topbar-tools"><div class="segmented" aria-label="Idioma" data-i18n-aria-label="language">
           <button class="segmented-btn is-active" id="lang-es" type="button" data-lang-option="es">ES</button>
           <button class="segmented-btn" id="lang-en" type="button" data-lang-option="en">ENG</button>
         </div>
@@ -22,7 +22,7 @@
           <input id="theme-toggle" type="checkbox">
           <span data-i18n="darkMode">Modo oscuro</span>
         </label>
-      </header>
+      </div></header>
 
       <section class="hero" aria-labelledby="page-title">
         <div class="hero-copy">
@@ -34,7 +34,7 @@
           </p>
         </div>
 
-        <div class="stats" aria-label="Resumen" data-i18n-aria-label="summary">
+        <div class="hero-art" aria-hidden="true"><div class="art-orbit"></div><div class="format-card format-png"><span class="mini-landscape">&#10022;</span><strong>PNG</strong><small>original</small></div><span class="art-arrow">&#8599;</span><div class="format-card format-ico"><span class="icon-flower">&#10035;</span><strong>ICO</strong><small>pixel perfect</small></div><span class="art-spark">&#10023;</span><span class="art-caption">.png &#8594; .ico</span></div></section><div class="workspace-heading"><div><span class="section-kicker" data-i18n="workspaceLabel"></span><h2 data-i18n="workspaceTitle"></h2></div><span class="local-pill"><i></i><span data-i18n="localBadge"></span></span></div><div class="stats" aria-label="Resumen" data-i18n-aria-label="summary">
           <div>
             <strong id="file-count">0</strong>
             <span data-i18n="files">archivos</span>
@@ -48,10 +48,9 @@
             <span data-i18n="selected">seleccionados</span>
           </div>
         </div>
-      </section>
 
       <section class="workspace" aria-label="Convertidor" data-i18n-aria-label="converter">
-        <div class="upload-panel">
+        <div class="upload-panel"><div class="panel-heading"><span class="step-number">01</span><h2 data-i18n="uploadStep"></h2><span class="file-type">.PNG</span></div>
           <label class="drop-zone" id="drop-zone" for="file-input">
             <input id="file-input" type="file" accept="image/png" multiple>
             <span class="upload-icon" aria-hidden="true">
@@ -61,10 +60,10 @@
             </span>
             <span class="drop-title" data-i18n="dropTitle">Suelta tus PNG aquí</span>
             <span class="drop-subtitle" data-i18n="dropSubtitle">o haz clic para seleccionar muchos archivos</span>
-          </label>
+            <span class="browse-button" data-i18n="browse"></span><span class="drop-note" data-i18n="batchNote"></span></label>
 
           <div class="controls" aria-label="Opciones" data-i18n-aria-label="options">
-            <div class="control-group">
+            <div class="panel-heading settings-heading"><span class="step-number">02</span><h2 data-i18n="settingsStep"></h2></div><div class="control-group">
               <span class="control-label" data-i18n="sizesLabel">Tamaños dentro del ICO</span>
               <div class="size-grid" id="size-options">
                 <label><input type="checkbox" value="16" checked>16</label>
@@ -97,7 +96,7 @@
           <div class="queue-head">
             <div>
               <h2 data-i18n="queueTitle">Cola de archivos</h2>
-              <p id="status-text"></p>
+              <p id="status-text" role="status"></p>
             </div>
             <div class="progress-wrap" aria-label="Progreso" data-i18n-aria-label="progress">
               <div class="progress-bar">
@@ -109,11 +108,11 @@
 
           <ul class="file-list" id="file-list" aria-live="polite"></ul>
           <div class="empty-state" id="empty-state">
-            <span>PNG</span>
+            <div class="empty-art" aria-hidden="true"><span class="empty-back"></span><span class="empty-front">&#10035;</span><i>+</i></div><h3 data-i18n="emptyTitle"></h3>
             <p data-i18n="emptyState">Los archivos seleccionados aparecerán aquí con su estado.</p>
           </div>
         </div>
       </section>
-    </main>
+<footer><span>pngtoico<span class="brand-dot">.</span></span><p data-i18n="footerNote"></p><a class="footer-link" href="https://g2806.net">g2806.net <span aria-hidden="true">&#8599;</span></a></footer></main>
   </body>
 </html>
